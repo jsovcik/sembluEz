@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class DeviceListActivity extends Activity  {
+public class DeviceListActivity extends Activity implements AdapterView.OnItemClickListener {
     private ListView mListView;
     private DeviceListAdapter mAdapter;
     private ArrayList<BluetoothDevice> mDeviceList;
@@ -103,7 +103,11 @@ public class DeviceListActivity extends Activity  {
         }
     };
 
-
-
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(this, SendDataActivity.class);
+        intent.putExtra("device", mDeviceList.get(position));
+        startActivity(intent);
+    }
 
 }
