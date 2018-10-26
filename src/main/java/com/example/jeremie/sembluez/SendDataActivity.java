@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.ParcelUuid;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -17,15 +20,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import static android.content.ContentValues.TAG;
 
 public class SendDataActivity extends Activity {
 
     private Button fileButton;
     private Button send;
+    private ImageView imageView;
+
     private InputStream inStream;
     private OutputStream outputStream;
     private ByteArrayOutputStream byteArrayOutputStream;
+    private Uri dataUri;
+    private InputStream iStream;
 
 
     private static final int READ_REQUEST_CODE = 42;
@@ -41,6 +47,7 @@ public class SendDataActivity extends Activity {
 
         fileButton = (Button)   findViewById(R.id.btn_content);
         send       = (Button)   findViewById(R.id.send);
+        imageView  = (ImageView)findViewById(R.id.imageView);
 
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
@@ -51,41 +58,43 @@ public class SendDataActivity extends Activity {
             finish();
         }
 
-        if (fileButton != null){
-            fileButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View arg0) {
-                    // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
-                    // browser.
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 
-                    // Filter to only show results that can be "opened", such as a
-                    // file (as opposed to a list of contacts or timezones)
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+        fileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+                // browser.
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                // Filter to only show results that can be "opened", such as a
+                // file (as opposed to a list of contacts or timezones)
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-                    // Filter to show only images, using the image MIME data type.
-                    // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-                    // To search for all documents available via installed storage providers,
-                    // it would be "*/*".
-                    intent.setType("image/*");
+                // Filter to show only images, using the image MIME data type.
+                // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+                // To search for all documents available via installed storage providers,
+                // it would be "*/*".
+                intent.setType("image/*");
 
-                    startActivityForResult(intent, READ_REQUEST_CODE);
+                startActivityForResult(intent, READ_REQUEST_CODE);
+            }
+        });
 
-                }
-            });
-        }
 
 
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                UUID uuid = bluetoothDevice.getUuids()[0].getUuid();
+                ParcelUuid[] parcelUuid = bluetoothDevice.getUuids();
+                UUID uuid = parcelUuid[0].getUuid();
                 try {
                     BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
                     bluetoothSocket.connect();
                     outputStream = bluetoothSocket.getOutputStream();
                     inStream = bluetoothSocket.getInputStream();
+                    byte[] inputData = getBytes(iStream);
+                    outputStream.write(inputData);
+                    //bluetoothSocket.close();
                 }catch (IOException e){
                     e.printStackTrace();
                 }
@@ -95,6 +104,8 @@ public class SendDataActivity extends Activity {
 
 
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode,
@@ -112,9 +123,28 @@ public class SendDataActivity extends Activity {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                Log.i(TAG, "Uri: " + uri.toString());
-                showImage(uri);
+                dataUri = uri;
+
+                try{
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    imageView.setImageBitmap(bitmap);
+                    iStream = getContentResolver().openInputStream(dataUri);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024*1024;
+        byte[] buffer = new byte[bufferSize];
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+
+        return byteBuffer.toByteArray();
     }
 }

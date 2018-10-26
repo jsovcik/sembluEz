@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="play" />
 
     <Button
         android:id="@+id/btn_content"
@@ -12,9 +20,11 @@
         android:layout_marginTop="114dp"
         android:text="find file" />
 
-    <Button
-        android:id="@+id/send"
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="play" />
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+
 </LinearLayout>
