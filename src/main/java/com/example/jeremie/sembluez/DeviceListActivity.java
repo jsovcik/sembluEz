@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class DeviceListActivity extends Activity implements AdapterView.OnItemClickListener {
+public class DeviceListActivity extends Activity {
     private ListView mListView;
     private DeviceListAdapter mAdapter;
     private ArrayList<BluetoothDevice> mDeviceList;
@@ -33,6 +33,11 @@ public class DeviceListActivity extends Activity implements AdapterView.OnItemCl
         mAdapter		= new DeviceListAdapter(this);
 
         mAdapter.setData(mDeviceList);
+
+
+        mListView.setAdapter(mAdapter);
+
+        registerReceiver(mPairReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
         mAdapter.setListener(new DeviceListAdapter.OnPairButtonClickListener() {
             @Override
             public void onPairButtonClick(int position) {
@@ -48,10 +53,22 @@ public class DeviceListActivity extends Activity implements AdapterView.OnItemCl
             }
         });
 
-        mListView.setAdapter(mAdapter);
+        registerReceiver(mPairReceiver, new IntentFilter(android.intent.action.VIEW));
+        mAdapter.setListener(new DeviceListAdapter.OnPairButtonClickListener() {
+            @Override
+            public void onPairButtonClick(int position) {
+                BluetoothDevice device = mDeviceList.get(position);
 
-        registerReceiver(mPairReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+                Intent intent = new Intent(DeviceListActivity.this, SendDataActivity.class);
+                intent.putExtra("device", device);
+                DeviceListActivity.this.startActivity(intent);
+
+            }
+        });
+
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -103,11 +120,5 @@ public class DeviceListActivity extends Activity implements AdapterView.OnItemCl
         }
     };
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(this, SendDataActivity.class);
-        intent.putExtra("device", mDeviceList.get(position));
-        startActivity(intent);
-    }
 
 }

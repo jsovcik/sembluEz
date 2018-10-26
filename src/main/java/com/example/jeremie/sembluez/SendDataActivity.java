@@ -22,6 +22,6 @@ public class SendDataActivity extends Activity {
         bdev = (TextView)findViewById(R.id.bdev);
         bdev.setText(bluetoothDevice.getName());
 
-        
+
     }
 }
