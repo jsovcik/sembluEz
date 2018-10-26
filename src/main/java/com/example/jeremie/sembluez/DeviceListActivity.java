@@ -9,7 +9,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
@@ -20,6 +22,8 @@ public class DeviceListActivity extends Activity {
     private DeviceListAdapter mAdapter;
     private ArrayList<BluetoothDevice> mDeviceList;
 
+    private Button mSendBtn;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +33,7 @@ public class DeviceListActivity extends Activity {
         mDeviceList		= getIntent().getExtras().getParcelableArrayList("device.list");
 
         mListView		= (ListView) findViewById(R.id.lv_paired);
-
+        mSendBtn 		= (Button) findViewById(R.id.btn_content);
         mAdapter		= new DeviceListAdapter(this);
 
         mAdapter.setData(mDeviceList);
@@ -53,14 +57,12 @@ public class DeviceListActivity extends Activity {
             }
         });
 
-        registerReceiver(mPairReceiver, new IntentFilter(android.intent.action.VIEW));
-        mAdapter.setListener(new DeviceListAdapter.OnPairButtonClickListener() {
+        registerReceiver(mSendReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+        mAdapter.setSendListener(new DeviceListAdapter.OnSendButtonClickListener() {
             @Override
-            public void onPairButtonClick(int position) {
-                BluetoothDevice device = mDeviceList.get(position);
-
+            public void onSendButtonClick(int position) {
                 Intent intent = new Intent(DeviceListActivity.this, SendDataActivity.class);
-                intent.putExtra("device", device);
+                intent.putExtra("device", mDeviceList.get(position));
                 DeviceListActivity.this.startActivity(intent);
 
             }
@@ -119,6 +121,15 @@ public class DeviceListActivity extends Activity {
             }
         }
     };
+
+    private final BroadcastReceiver mSendReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+
+        }
+    };
+
 
 
 }

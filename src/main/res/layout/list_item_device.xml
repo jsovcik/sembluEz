@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/btn_pair"
         android:layout_toStartOf="@+id/btn_pair"
-        android:text="Button"
-        tools:text="share media" />
+        android:text="share media"
+        />
 
 </RelativeLayout>

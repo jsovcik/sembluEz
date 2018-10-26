@@ -16,6 +16,7 @@ public class DeviceListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private List<BluetoothDevice> mData;
     private OnPairButtonClickListener mListener;
+    private OnSendButtonClickListener mSendListener;
 
     public DeviceListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -27,6 +28,10 @@ public class DeviceListAdapter extends BaseAdapter {
 
     public void setListener(OnPairButtonClickListener listener) {
         mListener = listener;
+    }
+
+    public void setSendListener(OnSendButtonClickListener listener) {
+        mSendListener = listener;
     }
 
     public int getCount() {
@@ -52,6 +57,7 @@ public class DeviceListAdapter extends BaseAdapter {
             holder.nameTv		= (TextView) convertView.findViewById(R.id.tv_name);
             holder.addressTv 	= (TextView) convertView.findViewById(R.id.tv_address);
             holder.pairBtn		= (Button) convertView.findViewById(R.id.btn_pair);
+            holder.sendBtn		= (Button) convertView.findViewById(R.id.btn_content);
 
             convertView.setTag(holder);
         } else {
@@ -72,6 +78,15 @@ public class DeviceListAdapter extends BaseAdapter {
             }
         });
 
+        holder.sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mSendListener.onSendButtonClick(position);
+                }
+            }
+        });
+
         return convertView;
     }
 
@@ -79,10 +94,14 @@ public class DeviceListAdapter extends BaseAdapter {
         TextView nameTv;
         TextView addressTv;
         TextView pairBtn;
+        TextView sendBtn;
     }
 
     public interface OnPairButtonClickListener {
         public abstract void onPairButtonClick(int position);
     }
 
+    public interface OnSendButtonClickListener {
+        public abstract void onSendButtonClick(int position);
+    }
 }
