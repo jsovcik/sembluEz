@@ -61,8 +61,9 @@ public class DeviceListActivity extends Activity {
         mAdapter.setSendListener(new DeviceListAdapter.OnSendButtonClickListener() {
             @Override
             public void onSendButtonClick(int position) {
+                BluetoothDevice bluetoothDevice = mDeviceList.get(position);
                 Intent intent = new Intent(DeviceListActivity.this, SendDataActivity.class);
-                intent.putExtra("device", mDeviceList.get(position));
+                intent.putExtra("device", bluetoothDevice);
                 DeviceListActivity.this.startActivity(intent);
 
             }
