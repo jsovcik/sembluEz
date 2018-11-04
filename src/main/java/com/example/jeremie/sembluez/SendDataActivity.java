@@ -49,6 +49,7 @@ public class SendDataActivity extends Activity {
         send       = (Button)   findViewById(R.id.send);
         imageView  = (ImageView)findViewById(R.id.imageView);
 
+        // Récupération des informations sur le device passées dans l'intent
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
         if (extra != null) {
@@ -82,19 +83,29 @@ public class SendDataActivity extends Activity {
 
 
 
+        // Action déclenché par l'action du boutton d'envoi de l'image sélectionné.
+        // C'est la fonction déféctueuse.
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                // Récuperation de l'UUID du device
                 ParcelUuid[] parcelUuid = bluetoothDevice.getUuids();
                 UUID uuid = parcelUuid[0].getUuid();
                 try {
+                    // Création d'une socket Rfcomm
                     BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
                     bluetoothSocket.connect();
+
                     outputStream = bluetoothSocket.getOutputStream();
                     inStream = bluetoothSocket.getInputStream();
+
+                    // Récuperation de l'image
                     byte[] inputData = getBytes(iStream);
+
+                    // Tentative d'écriture
                     outputStream.write(inputData);
-                    //bluetoothSocket.close();
+                    bluetoothSocket.close();
+
                 }catch (IOException e){
                     e.printStackTrace();
                 }
@@ -107,6 +118,7 @@ public class SendDataActivity extends Activity {
 
 
 
+    // Action déclenché au retour dans l'activité après avoir sélectionné un fichier
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
@@ -127,6 +139,7 @@ public class SendDataActivity extends Activity {
 
                 try{
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    // affiche l'image séléctionné
                     imageView.setImageBitmap(bitmap);
                     iStream = getContentResolver().openInputStream(dataUri);
                 }catch (IOException e){
@@ -136,6 +149,8 @@ public class SendDataActivity extends Activity {
         }
     }
 
+    // Fonction de transformation entre l'InputStream récupéré par la séléction de la photo et
+    // le byte[] à envoyer à la socket bluetooth.
     public byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024*1024;

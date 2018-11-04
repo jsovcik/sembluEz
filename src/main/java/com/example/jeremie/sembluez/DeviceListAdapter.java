@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+
+/* Cet élément sert à gérer la liste des device appairés et les bouttons qui apparaissent dessus.
+   il est necessaire pour faire le lien entre UI et modèle de donnée mais ne sert pas en terme de
+   fonctionnement de l'application. */
 public class DeviceListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;

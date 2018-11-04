@@ -19,8 +19,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Set;
 
-/*Cette Activité est la principale et se lance au lancement de l'application. Elle gère simplement les button présent 
-la vue associée. A l'aide d'intent on fait curcyler les données entre activité et on les démarre*/
+/*Cette Activité est la principale et se lance au lancement de l'application. Elle gère simplement les boutton présent
+dans la vue associée.*/
 public class MainActivity extends AppCompatActivity {
 
     private TextView mStatusTv;
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
 
+    /* cette méthode est déclenchée au demarrage de l'activité */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         if (mBluetoothAdapter == null) {
             showUnsupported();
         } else {
-            //Lance l'activity DeveListActivity si l'objet Bluetooth Adapter est non vide.
+            //Lance l'activity DeviceListActivity si l'objet Bluetooth Adapter est non vide.
             mPairedBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -86,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            //Lance la fonction Scan de BT
+            //Lance la fonction Scan de BT quand le boutton mScanBtn est clické
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
                     mBluetoothAdapter.startDiscovery();
                 }
             });
-        //Activation du BT manuelement 
+        //Activation du BT manuelement quand le boutton est clické
             mActivateBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -181,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    /* cet élément écoute les intents renvoyés par le bluetooth adapter*/
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
