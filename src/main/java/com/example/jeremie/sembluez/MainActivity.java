@@ -19,6 +19,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Set;
 
+/*Cette Activité est la principale et se lance au lancement de l'application. Elle gère simplement les button présent 
+la vue associée. A l'aide d'intent on fait curcyler les données entre activité et on les démarre*/
 public class MainActivity extends AppCompatActivity {
 
     private TextView mStatusTv;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        //Liaison objet Java et éléments de la vue
         mStatusTv 			= (TextView) findViewById(R.id.tv_status);
         mActivateBtn 		= (Button) findViewById(R.id.btn_enable);
         mPairedBtn 			= (Button) findViewById(R.id.btn_view_paired);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter	= BluetoothAdapter.getDefaultAdapter();
 
         mProgressDlg 		= new ProgressDialog(this);
-
+        //Les ProgressDialog sont les petites fenêtre de chargement (loader) que l'on retrouve fréquement sur les application Android.
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         if (mBluetoothAdapter == null) {
             showUnsupported();
         } else {
+            //Lance l'activity DeveListActivity si l'objet Bluetooth Adapter est non vide.
             mPairedBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -83,13 +86,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            //Lance la fonction Scan de BT
             mScanBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
                     mBluetoothAdapter.startDiscovery();
                 }
             });
-
+        //Activation du BT manuelement 
             mActivateBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
         registerReceiver(mReceiver, filter);
+        //L'intent-Filter filter nous permet de signaler que l'activité sera sensible au events choisis, concernant le BT
     }
 
     @Override
